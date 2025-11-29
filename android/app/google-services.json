@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "971946898346",
+    "project_id": "sagtceted",
+    "storage_bucket": "sagtceted.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:971946898346:android:1d960a460f22adb04631d3",
+        "android_client_info": {
+          "package_name": "com.example.sagtceted"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1OcNYWhFY87f11BZNs4MHwVcaWkrn3Fo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
