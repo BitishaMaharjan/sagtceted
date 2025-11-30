@@ -107,13 +107,13 @@ class _RegisterPageState extends State<RegisterPage>
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Icon(Icons.air_rounded, size: 80, color: Colors.greenAccent),
+                      Icon(Icons.air_rounded, size: 60, color: Colors.greenAccent),
                       SizedBox(width: 12),
                       Text(
                         "SAGTCETED", // Uppercase for sci-fi effect
                         style: TextStyle(
                           fontFamily: 'monospace', // Built-in font
-                          fontSize: 32,
+                          fontSize: 30,
                           fontWeight: FontWeight.bold,
                           color: Colors.greenAccent,
                           letterSpacing: 2, // Wider spacing for futuristic look
@@ -133,7 +133,7 @@ class _RegisterPageState extends State<RegisterPage>
                       ),
                       Transform.rotate(
                         angle: 3.1416, // Rotate icon to face left
-                        child: Icon(Icons.air_rounded, size: 70, color: Colors.greenAccent),
+                        child: Icon(Icons.air_rounded, size: 60, color: Colors.greenAccent),
                       ),
 
                     ],

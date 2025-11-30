@@ -15,6 +15,7 @@ class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool loading = false;
+  bool hidePassword = true;
 
   final _secureStorage = const FlutterSecureStorage();
 
@@ -27,117 +28,28 @@ class _LoginPageState extends State<LoginPage> {
           Container(color: Colors.black.withOpacity(0.45)),
           Center(
             child: SingleChildScrollView(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(Icons.air_rounded, size: 80, color: Colors.greenAccent),
-                      SizedBox(width: 12),
-                      Text(
-                        "SAGTCETED",
-                        style: TextStyle(
-                          fontFamily: 'monospace',
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.greenAccent,
-                          letterSpacing: 2,
-                          shadows: [
-                            Shadow(
-                              color: Colors.greenAccent.withOpacity(0.6),
-                              blurRadius: 6,
-                              offset: Offset(0, 0),
-                            ),
-                            Shadow(
-                              color: Colors.greenAccent.withOpacity(0.3),
-                              blurRadius: 12,
-                              offset: Offset(0, 0),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Transform.rotate(
-                        angle: 3.1416,
-                        child: Icon(Icons.air_rounded, size: 70, color: Colors.greenAccent),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 70),
+                  _buildLogo(),
+                  const SizedBox(height: 60),
 
-                  TextField(
-                    controller: emailController,
-                    decoration: _buildInput("Email"),
-                  ),
-                  SizedBox(height: 30),
+                  _buildTextField(emailController, "Email", false),
+                  const SizedBox(height: 20),
 
-                  TextField(
-                    controller: passwordController,
-                    obscureText: true,
-                    decoration: _buildInput("Password"),
-                  ),
-                  SizedBox(height: 25),
+                  _buildTextField(passwordController, "Password", true),
 
-                  GestureDetector(
-                    onTap: loginUser,
-                    child: Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.greenAccent.withOpacity(.25),
-                        border: Border.all(color: Colors.greenAccent),
-                      ),
-                      child: Center(
-                        child: loading
-                            ? CircularProgressIndicator(color: Colors.greenAccent)
-                            : Text(
-                          "LOGIN",
-                          style: TextStyle(
-                            color: Colors.greenAccent,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                  _buildForgotPassword(),
 
-                  SizedBox(height: 15),
+                  const SizedBox(height: 5),
+                  _buildLoginButton(),
 
-                  GestureDetector(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => ForgotPasswordPage()),
-                    ),
-                    child: Text(
-                      "Forgot Password?",
-                      style: TextStyle(
-                        color: Colors.greenAccent.withOpacity(0.8),
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: 20),
+                  const SizedBox(height: 40),
                   Divider(color: Colors.greenAccent.withOpacity(0.4)),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                  GestureDetector(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => RegisterPage()),
-                    ),
-                    child: Text(
-                      "Create New Account",
-                      style: TextStyle(
-                        color: Colors.greenAccent,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
+                  _buildRegisterLink(),
                 ],
               ),
             ),
@@ -147,17 +59,138 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  InputDecoration _buildInput(String label) {
-    return InputDecoration(
-      labelText: label,
-      labelStyle: TextStyle(color: Colors.greenAccent),
-      enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Colors.greenAccent),
-        borderRadius: BorderRadius.circular(12),
+  Widget _buildLogo() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(Icons.air_rounded, size: 50, color: Colors.greenAccent),
+        const SizedBox(width: 12),
+        Text(
+          "SAGTCETED",
+          style: TextStyle(
+            fontFamily: 'monospace',
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            color: Colors.greenAccent,
+            letterSpacing: 2,
+            shadows: [
+              Shadow(
+                color: Colors.greenAccent.withOpacity(0.6),
+                blurRadius: 6,
+              ),
+              Shadow(
+                color: Colors.greenAccent.withOpacity(0.3),
+                blurRadius: 12,
+              ),
+            ],
+          ),
+        ),
+        Transform.rotate(
+          angle: 3.1416,
+          child: Icon(Icons.air_rounded, size: 50, color: Colors.greenAccent),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTextField(
+      TextEditingController controller, String label, bool isPassword) {
+    return TextField(
+      controller: controller,
+      obscureText: isPassword ? hidePassword : false,
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(color: Colors.greenAccent),
+        enabledBorder: OutlineInputBorder(
+          borderSide: const BorderSide(color: Colors.greenAccent),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: const BorderSide(color: Colors.lightGreenAccent),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        suffixIcon: isPassword
+            ? IconButton(
+          icon: Icon(
+            hidePassword ? Icons.visibility_off : Icons.visibility,
+            color: Colors.greenAccent,
+          ),
+          onPressed: () {
+            setState(() {
+              hidePassword = !hidePassword;
+            });
+          },
+        )
+            : null,
       ),
-      focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Colors.lightGreenAccent),
-        borderRadius: BorderRadius.circular(12),
+    );
+  }
+
+  Widget _buildForgotPassword() {
+    return Container(
+      alignment: Alignment.centerRight,
+      child: TextButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => ForgotPasswordPage()),
+          );
+        },
+        child: Text(
+          "Forgot Password?",
+          style: TextStyle(
+            color: Colors.greenAccent.withOpacity(0.8),
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoginButton() {
+    return GestureDetector(
+      onTap: loginUser,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: Colors.greenAccent.withOpacity(0.25),
+          border: Border.all(color: Colors.greenAccent),
+        ),
+        child: Center(
+          child: loading
+              ? const CircularProgressIndicator(color: Colors.greenAccent)
+              : const Text(
+            "LOGIN",
+            style: TextStyle(
+              color: Colors.greenAccent,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRegisterLink() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => RegisterPage()),
+        );
+      },
+      child: Text(
+        "Didn't have a Account ? Register ",
+        style: const TextStyle(
+          color: Colors.greenAccent,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }
@@ -177,7 +210,6 @@ class _LoginPageState extends State<LoginPage> {
       UserCredential userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: pass);
 
-      // Save user ID securely
       final uid = userCredential.user?.uid;
       if (uid != null) {
         await _secureStorage.write(key: 'userId', value: uid);
@@ -205,12 +237,12 @@ class _LoginPageState extends State<LoginPage> {
         backgroundColor: Colors.black,
         title: Text(
           title,
-          style: TextStyle(
-              color: isError ? Colors.redAccent : Colors.greenAccent),
+          style:
+          TextStyle(color: isError ? Colors.redAccent : Colors.greenAccent),
         ),
         content: Text(
           message,
-          style: TextStyle(color: Colors.white70),
+          style: const TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
