@@ -3,6 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:sagtceted/screens/auth/login_page.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 
 late List<CameraDescription> cameras;
 
@@ -11,6 +13,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await dotenv.load(fileName: ".env");
   cameras = await availableCameras();
   runApp(MyApp());
 }

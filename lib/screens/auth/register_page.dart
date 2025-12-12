@@ -99,7 +99,7 @@ class _RegisterPageState extends State<RegisterPage>
           // Main content (mirrors Login)
           Center(
             child: SingleChildScrollView(
-              padding: EdgeInsets.all(12),
+              padding: EdgeInsets.all(16),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

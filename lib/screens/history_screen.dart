@@ -29,8 +29,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
     final userId = await _storage.read(key: 'userId') ?? "unknown";
     setState(() {
       _userId = userId;
-
-      // Initialize the stream **once** after userId is loaded
       _historyStream = FirebaseFirestore.instance
           .collection('predictions')
           .where('userId', isEqualTo: _userId)
@@ -71,7 +69,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       backgroundColor: Colors.black,
       body: Column(
         children: [
-          const SizedBox(height: 70),
+          const SizedBox(height: 50),
 
           // Header
           Row(
@@ -81,14 +79,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 icon: const Icon(Icons.arrow_back, color: Colors.greenAccent),
                 onPressed: () => Navigator.pop(context),
               ),
-              const SizedBox(width: 6),
+              const SizedBox(width: 2),
               const Icon(Icons.air_rounded, size: 27, color: Colors.greenAccent),
               const SizedBox(width: 12),
               const Text(
                 "SAGTCETED HISTORY",
                 style: TextStyle(
                   fontFamily: 'monospace',
-                  fontSize: 20,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: Colors.greenAccent,
                   letterSpacing: 2,
@@ -97,8 +95,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
               const SizedBox(width: 12),
               Transform.rotate(
                 angle: 3.1416,
-                child:
-                const Icon(Icons.air_rounded, size: 27, color: Colors.greenAccent),
+                child: const Icon(Icons.air_rounded,
+                    size: 27, color: Colors.greenAccent),
               ),
             ],
           ),
@@ -110,7 +108,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Row(
               children: [
-                // Search by prediction
                 Expanded(
                   child: TextField(
                     style: const TextStyle(color: Colors.white),
@@ -132,7 +129,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 ),
                 const SizedBox(width: 10),
 
-                // Date filter button
                 GestureDetector(
                   onTap: _pickDateRange,
                   child: Container(
@@ -141,23 +137,22 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       color: Colors.greenAccent.withOpacity(0.3),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(Icons.date_range, color: Colors.greenAccent),
+                    child:
+                    const Icon(Icons.date_range, color: Colors.greenAccent),
                   ),
                 ),
               ],
             ),
           ),
 
-          const SizedBox(height: 10),
-
-          // History list
           Expanded(
             child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
               stream: _historyStream,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
-                      child: CircularProgressIndicator(color: Colors.greenAccent));
+                      child:
+                      CircularProgressIndicator(color: Colors.greenAccent));
                 }
 
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
@@ -172,7 +167,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 // Apply search filter in memory
                 if (_searchText.isNotEmpty) {
                   docs = docs.where((d) {
-                    final pred = d['prediction']?.toString().toLowerCase() ?? "";
+                    final pred =
+                        d['prediction']?.toString().toLowerCase() ?? "";
                     return pred.contains(_searchText.toLowerCase());
                   }).toList();
                 }
@@ -183,7 +179,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     final ts = d['timestamp'] as Timestamp?;
                     if (ts == null) return false;
                     final date = ts.toDate();
-                    return date.isAfter(_startDate!.subtract(const Duration(days: 1))) &&
+                    return date.isAfter(
+                        _startDate!.subtract(const Duration(days: 1))) &&
                         date.isBefore(_endDate!.add(const Duration(days: 1)));
                   }).toList();
                 }
@@ -209,22 +206,50 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         ? (d['timestamp'] as Timestamp).toDate()
                         : null;
 
-                    return Card(
-                      color: Colors.grey[900],
-                      margin:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      child: ListTile(
-                        leading: imageBytes != null
-                            ? Image.memory(imageBytes,
-                            width: 60, height: 60, fit: BoxFit.cover)
-                            : const Icon(Icons.image_not_supported,
-                            color: Colors.redAccent, size: 40),
-                        title: Text(d['prediction'] ?? "Unknown",
-                            style: const TextStyle(color: Colors.white)),
-                        subtitle: timestamp != null
-                            ? Text(DateFormat('yyyy-MM-dd HH:mm').format(timestamp),
-                            style: const TextStyle(color: Colors.white70))
-                            : null,
+                    return Dismissible(
+                      key: Key(d.id),
+                      direction: DismissDirection.endToStart,
+                      background: Container(
+                        color: Colors.red,
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child:
+                        const Icon(Icons.delete, color: Colors.white, size: 30),
+                      ),
+                      onDismissed: (direction) async {
+                        await FirebaseFirestore.instance
+                            .collection('predictions')
+                            .doc(d.id)
+                            .delete();
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Deleted successfully"),
+                            backgroundColor: Colors.grey,
+                          ),
+                        );
+                      },
+                      child: Card(
+                        color: Colors.grey[900],
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        child: ListTile(
+                          leading: imageBytes != null
+                              ? Image.memory(imageBytes,
+                              width: 60, height: 60, fit: BoxFit.cover)
+                              : const Icon(Icons.image_not_supported,
+                              color: Colors.redAccent, size: 40),
+                          title: Text(d['prediction'] ?? "Unknown",
+                              style: const TextStyle(color: Colors.white)),
+                          subtitle: timestamp != null
+                              ? Text(
+                            DateFormat('yyyy-MM-dd HH:mm')
+                                .format(timestamp),
+                            style:
+                            const TextStyle(color: Colors.white70),
+                          )
+                              : null,
+                        ),
                       ),
                     );
                   },
